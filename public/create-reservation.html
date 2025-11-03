@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tool Reservation System</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .header {
+      text-align: center;
+      color: white;
+      margin-bottom: 2rem;
+    }
+
+    .header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .header p {
+      font-size: 1.1rem;
+      opacity: 0.95;
+    }
+
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    .card h2 {
+      color: #667eea;
+      margin-bottom: 1.5rem;
+      font-size: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .card h2::before {
+      content: '';
+      width: 4px;
+      height: 24px;
+      background: #667eea;
+      border-radius: 2px;
+    }
+
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: #333;
+      font-weight: 500;
+      font-size: 0.95rem;
+    }
+
+    input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: all 0.3s;
+      font-family: inherit;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .input-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-family: inherit;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-secondary {
+      background: #f3f4f6;
+      color: #333;
+    }
+
+    .btn-secondary:hover {
+      background: #e5e7eb;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .result-box {
+      background: #f8f9fa;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-top: 1rem;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+      white-space: pre-wrap;
+      max-height: 400px;
+      overflow-y: auto;
+      display: none;
+    }
+
+    .result-box.show {
+      display: block;
+    }
+
+    .success {
+      background: #d4edda;
+      border-color: #c3e6cb;
+      color: #155724;
+    }
+
+    .error {
+      background: #f8d7da;
+      border-color: #f5c6cb;
+      color: #721c24;
+    }
+
+    .loading {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid #f3f3f3;
+      border-top: 2px solid #667eea;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-left: 0.5rem;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      background: #667eea;
+      color: white;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-left: 0.5rem;
+    }
+
+    .tool-card {
+      background: #f8f9fa;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 1rem;
+      margin: 0.75rem 0;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .tool-card:hover {
+      border-color: #667eea;
+      background: #f3f4ff;
+    }
+
+    .tool-card.selected {
+      border-color: #667eea;
+      background: #e8ebff;
+    }
+
+    @media (max-width: 640px) {
+      .input-group {
+        grid-template-columns: 1fr;
+      }
+      
+      .header h1 {
+        font-size: 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🔧 Tool Reservation System</h1>
+      <p>Find nearby branches and reserve tools for your project</p>
+    </div>
+
+    <!-- Find Nearest Branch -->
+    <div class="card">
+      <h2>📍 Find Nearest Branch</h2>
+      
+      <div class="input-group">
+        <div class="form-group">
+          <label>Longitude</label>
+          <input id="lng" type="number" step="any" placeholder="77.5946" value="77.5946"/>
+        </div>
+        <div class="form-group">
+          <label>Latitude</label>
+          <input id="lat" type="number" step="any" placeholder="12.9716" value="12.9716"/>
+        </div>
+      </div>
+
+      <div class="btn-group">
+        <button id="myloc" class="btn btn-secondary">📱 Use My Location</button>
+        <button id="near" class="btn btn-primary">🔍 Find Nearest (10km)</button>
+      </div>
+
+      <div id="nearestResult" class="result-box"></div>
+      <div id="toolsResult" class="result-box"></div>
+    </div>
+
+    <!-- Create Reservation -->
+    <div class="card">
+      <h2>📝 Create Reservation</h2>
+      
+      <div class="form-group">
+        <label>Tool ID <span class="badge">Required</span></label>
+        <input id="toolId" placeholder="64c0b5d4aa9a6a0b1b5e6f11"/>
+      </div>
+
+      <div class="form-group">
+        <label>Your Name</label>
+        <input id="userName" value="manu"/>
+      </div>
+
+      <div class="input-group">
+        <div class="form-group">
+          <label>Pickup Date & Time (ISO)</label>
+          <input id="pickupAt" type="datetime-local"/>
+        </div>
+        <div class="form-group">
+          <label>Return Date & Time (ISO)</label>
+          <input id="returnAt" type="datetime-local"/>
+        </div>
+      </div>
+
+      <div class="btn-group">
+        <button id="fill" class="btn btn-secondary">⏰ Fill 24-48h Window</button>
+        <button id="submit" class="btn btn-primary">✅ Create Reservation</button>
+      </div>
+
+      <div id="out" class="result-box"></div>
+    </div>
+  </div>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+
+    // Convert datetime-local to ISO string
+    function dateTimeLocalToISO(value) {
+      if (!value) return '';
+      return new Date(value).toISOString();
+    }
+
+    // Convert ISO string to datetime-local format
+    function isoToDateTimeLocal(iso) {
+      if (!iso) return '';
+      return new Date(iso).toISOString().slice(0, 16);
+    }
+
+    // Fill 24–48h window
+    $("fill").onclick = (e) => {
+      e.preventDefault();
+      const now = new Date();
+      const pickup = new Date(now.getTime() + 24*3600*1000);
+      const ret = new Date(now.getTime() + 48*3600*1000);
+      $("pickupAt").value = isoToDateTimeLocal(pickup.toISOString());
+      $("returnAt").value = isoToDateTimeLocal(ret.toISOString());
+    };
+
+    // Create reservation
+    $("submit").onclick = async (e) => {
+      e.preventDefault();
+      const btn = e.target;
+      const originalText = btn.innerHTML;
+      btn.innerHTML = 'Creating...<span class="loading"></span>';
+      btn.disabled = true;
+
+      try {
+        const body = {
+          userName: $("userName").value.trim(),
+          toolId: $("toolId").value.trim(),
+          pickupAt: dateTimeLocalToISO($("pickupAt").value),
+          returnAt: dateTimeLocalToISO($("returnAt").value)
+        };
+
+        const res = await fetch("/reservations", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body)
+        });
+        
+        const json = await res.json();
+        const outBox = $("out");
+        outBox.textContent = JSON.stringify(json, null, 2);
+        outBox.className = json.ok ? 'result-box show success' : 'result-box show error';
+      } catch (err) {
+        $("out").textContent = 'Error: ' + err.message;
+        $("out").className = 'result-box show error';
+      } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+      }
+    };
+
+    // Use my location
+    $("myloc").onclick = (e) => {
+      e.preventDefault();
+      const btn = e.target;
+      const originalText = btn.innerHTML;
+      btn.innerHTML = 'Getting location...<span class="loading"></span>';
+      btn.disabled = true;
+
+      if (!navigator.geolocation) {
+        alert("Geolocation not supported in this browser.");
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const { latitude, longitude } = pos.coords;
+          $("lat").value = latitude.toFixed(6);
+          $("lng").value = longitude.toFixed(6);
+          btn.innerHTML = originalText;
+          btn.disabled = false;
+        },
+        (err) => {
+          alert("Could not get location: " + err.message);
+          btn.innerHTML = originalText;
+          btn.disabled = false;
+        },
+        { enableHighAccuracy: true, timeout: 8000 }
+      );
+    };
+
+    // Find nearest branch
+    $("near").onclick = async (e) => {
+      e.preventDefault();
+      const btn = e.target;
+      const originalText = btn.innerHTML;
+      btn.innerHTML = 'Searching...<span class="loading"></span>';
+      btn.disabled = true;
+
+      try {
+        const lng = $("lng").value.trim();
+        const lat = $("lat").value.trim();
+        const url = `/branches/near?lng=${encodeURIComponent(lng)}&lat=${encodeURIComponent(lat)}&maxKm=10&limit=1`;
+        
+        const res = await fetch(url);
+        const json = await res.json();
+        
+        const nearestBox = $("nearestResult");
+        nearestBox.textContent = "Nearest branch:\n" + JSON.stringify(json, null, 2);
+        nearestBox.className = 'result-box show';
+
+        if (json.ok && json.data && json.data.length) {
+          const branchId = json.data[0]._id;
+          const tools = await fetch(`/tools?branchId=${encodeURIComponent(branchId)}&page=1&limit=5`);
+          const toolsJson = await tools.json();
+          
+          const toolsBox = $("toolsResult");
+          toolsBox.textContent = "Available tools at this branch:\n" + JSON.stringify(toolsJson, null, 2);
+          toolsBox.className = 'result-box show';
+
+          if (toolsJson.ok && toolsJson.data && toolsJson.data.length) {
+            $("toolId").value = toolsJson.data[0]._id;
+          }
+        }
+      } catch (err) {
+        $("nearestResult").textContent = 'Error: ' + err.message;
+        $("nearestResult").className = 'result-box show error';
+      } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+      }
+    };
+  </script>
+</body>
+</html>

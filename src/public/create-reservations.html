@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>Create Reservation</title>
+</head>
+<body>
+  <h1>Create Reservation</h1>
+  <form id="f">
+    <label>User Name <input name="userName" required></label><br/>
+    <label>Tool ID <input name="toolId" required></label><br/>
+    <label>Pickup At <input name="pickupAt" type="datetime-local" required></label><br/>
+    <label>Return At <input name="returnAt" type="datetime-local" required></label><br/>
+    <button type="submit">Reserve</button>
+  </form>
+  <pre id="out"></pre>
+  <script>
+    const f = document.getElementById('f');
+    const out = document.getElementById('out');
+    f.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const obj = Object.fromEntries(new FormData(f).entries());
+      // convert to ISO
+      obj.pickupAt = new Date(obj.pickupAt).toISOString();
+      obj.returnAt = new Date(obj.returnAt).toISOString();
+      const res = await fetch('/reservations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(obj)
+      });
+      out.textContent = await res.text();
+    });
+  </script>
+</body>
+</html>

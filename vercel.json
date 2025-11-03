@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "functions": {
+    "api/index.js": {
+      "runtime": "nodejs20.x"
+    }
+  },
+  "rewrites": [
+    { "source": "/branches/(.*)", "destination": "/api/branches/$1" },
+    { "source": "/tools/(.*)", "destination": "/api/tools/$1" },
+    { "source": "/reservations/(.*)", "destination": "/api/reservations/$1" },
+    { "source": "/reports/(.*)", "destination": "/api/reports/$1" },
+    { "source": "/public/(.*)", "destination": "/public/$1" }
+  ]
+}

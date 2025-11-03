@@ -10,6 +10,20 @@ import toolsRouter from './routes/tools.js';
 import reservationsRouter from './routes/reservations.js';
 import reportsRouter from './routes/reports.js';
 import { notFound, errorHandler } from './middleware/errorHandler.js';
+// src/server.js
+import app from "./app.js";
+import { connectMongo } from "./db.js";
+
+const PORT = process.env.PORT || 3000;
+
+(async () => {
+  await connectMongo();
+  app.listen(PORT, () => {
+    console.log(`[HTTP] Listening on port ${PORT}`);
+    console.log(`[INFO] Visit minimal form at /public/create-reservation.html`);
+  });
+})();
+
 
 const app = express();
 app.use(morgan('dev'));
